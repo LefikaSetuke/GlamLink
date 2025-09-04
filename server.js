@@ -1,12 +1,12 @@
-import express from "express";
-import { whatsappWebhookHandler } from "./controllers/webhookController.js";
+require("dotenv").config();
+const express = require ("express");
+const bodyParser = require("body-parser");
+const whatsappWebhookHandler = require("./controllers/webhookController.js");
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
-// WhatsApp webhook endpoint
-app.post("/whatsapp", whatsappWebhookHandler);
+//Middleware
+app.use(bodyParser.json());
 
 // (Optional) Direct API for booking
 import { saveClientBooking } from "./models/bookingSchema.js";
