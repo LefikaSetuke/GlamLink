@@ -1,0 +1,8 @@
+{
+    "start_node": "Hello",
+    "nodes": {
+        "Hello": {
+            "id":"hello"
+        }
+    }
+}
