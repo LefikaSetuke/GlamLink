@@ -1,4 +1,4 @@
-import { saveClientBooking } from "../models/bookingSchema.js";
+import { saveClientBooking } from "../services/firebaseService.js";
 
 export async function whatsappWebhookHandler(req, res) {
   const userPhone = req.body.From.replace("whatsapp:", "");

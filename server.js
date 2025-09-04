@@ -1,5 +1,6 @@
 import express from "express";
 import { whatsappWebhookHandler } from "./controllers/webhookController.js";
+import { saveClientBooking } from "./services/firebaseService.js";
 
 const app = express();
 app.use(express.json());
@@ -8,8 +9,10 @@ app.use(express.urlencoded({ extended: false }));
 // WhatsApp webhook endpoint
 app.post("/whatsapp", whatsappWebhookHandler);
 
+app.post("/test", (req, res) => {
+  res.json({ message: "Test route working" });
+});
 // (Optional) Direct API for booking
-import { saveClientBooking } from "./models/bookingSchema.js";
 app.post("/api/book", async (req, res) => {
   const { phone, name, booking } = req.body;
   if (!phone || !name || !booking) {
