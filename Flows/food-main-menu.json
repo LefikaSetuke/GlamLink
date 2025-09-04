@@ -1,0 +1,484 @@
+{
+  "start_node": "greeting",
+  "nodes": {
+    "greeting": {
+      "id": "greeting",
+      "type": "info",
+      "message": "🍽️ Welcome to Kadijo Foodbot! Your personal food ordering assistant.\n\n",
+      "next": {
+        "type": "auto",
+        "target": "main_menu"
+      }
+    },
+    "main_menu": {
+      "id": "main_menu",
+      "type": "options",
+      "message": "🍔 Browse Food Vendors\n🛒 View Cart\n📦 Track My Order\n💸 View Offers & Promotions\n🛎️ Contact Support",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "Browse Food Vendors",
+        "View Cart",
+        "Track My Order",
+        "View Offers & Promotions",
+        "Contact Support"
+      ],
+      "data_key": "mainMenuChoice",
+      "option_routes": {
+        "1": "browse_vendors",
+        "2": "view_cart",
+        "3": "track_order",
+        "4": "view_offers",
+        "5": "contact_support",
+        "Browse Food Vendors": "browse_vendors",
+        "View Cart": "view_cart",
+        "Track My Order": "track_order",
+        "View Offers & Promotions": "view_offers",
+        "Contact Support": "contact_support"
+      }
+    },
+    "browse_vendors": {
+      "id": "browse_vendors",
+      "type": "api_call",
+      "message": "🍽️ Fetching available vendors...",
+      "api": "get_vendors",
+      "data_key": "vendors",
+      "next": {
+        "on_success": "display_vendors",
+        "on_failure": "vendors_error"
+      }
+    },
+    "display_vendors": {
+      "id": "display_vendors",
+      "type": "dynamic_options",
+      "message": "🍽️ Available Food Vendors:\n\n{session.data.vendors}",
+      "options_source": "vendors",
+      "data_key": "selectedVendor",
+      "next": {
+        "on_success": "redirect_to_vendor",
+        "on_failure": "vendors_error"
+      }
+    },
+    "vendors_error": {
+      "id": "vendors_error",
+      "type": "info",
+      "message": "❌ Unable to fetch vendors at this time. Please try again later.",
+      "next": {
+        "target": "return_to_main_menu"
+      }
+    },
+    "redirect_to_vendor": {
+      "id": "redirect_to_vendor",
+      "type": "switch_flow",
+      "message": "🍽️ Taking you to {session.data.selectedVendor.name}...",
+      "targetFlow": "vendor-flow",
+      "next": "main_menu",
+      "on_failure": "main_menu"
+    },
+    "view_cart": {
+      "id": "view_cart",
+      "type": "api_call",
+      "message": "🛒 Loading your cart...",
+      "api": "get_cart",
+      "data_key": "cart",
+      "next": {
+        "on_success": "display_cart",
+        "on_failure": "cart_error"
+      }
+    },
+    "display_cart": {
+      "id": "display_cart",
+      "type": "info",
+      "message": "🛒 Your Cart:\n\n{session.data.cart}",
+      "next": {
+        "target": "cart_actions"
+      }
+    },
+    "cart_error": {
+      "id": "cart_error",
+      "type": "info",
+      "message": "❌ Unable to load your cart. Please try again later.",
+      "next": {
+        "target": "return_to_main_menu"
+      }
+    },
+    "cart_actions": {
+      "id": "cart_actions",
+      "type": "options",
+      "message": "What would you like to do with your cart?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "Checkout",
+        "Edit Cart",
+        "Clear Cart",
+        "Continue Shopping",
+        "Back to Main Menu"
+      ],
+      "data_key": "cartAction",
+      "option_routes": {
+        "1": "checkout",
+        "2": "edit_cart",
+        "3": "clear_cart",
+        "4": "browse_vendors",
+        "5": "main_menu",
+        "Checkout": "checkout",
+        "Edit Cart": "edit_cart",
+        "Clear Cart": "clear_cart",
+        "Continue Shopping": "browse_vendors",
+        "Back to Main Menu": "main_menu"
+      }
+    },
+    "edit_cart": {
+      "id": "edit_cart",
+      "type": "api_call",
+      "message": "📝 Loading your cart for editing...",
+      "api": "get_cart_items",
+      "data_key": "cartItems",
+      "next": {
+        "on_success": "display_cart_items_for_edit",
+        "on_failure": "edit_cart_error"
+      }
+    },
+    "display_cart_items_for_edit": {
+      "id": "display_cart_items_for_edit",
+      "type": "dynamic_options",
+      "message": "📝 Your Cart Items:\n\n{session.data.cartItems}",
+      "options_source": "cartItemOptions",
+      "data_key": "selectedCartItem",
+      "next": {
+        "on_success": "cart_item_actions",
+        "on_failure": "edit_cart_error"
+      }
+    },
+    "edit_cart_error": {
+      "id": "edit_cart_error",
+      "type": "info",
+      "message": "❌ Unable to load cart items for editing. Please try again later.",
+      "next": {
+        "target": "return_to_main_menu"
+      }
+    },
+    "cart_item_actions": {
+      "id": "cart_item_actions",
+      "type": "options",
+      "message": "What would you like to do with {session.data.selectedCartItem.name}?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "Change Quantity",
+        "Remove Item",
+        "Modify Customizations",
+        "Back to Cart"
+      ],
+      "data_key": "cartItemAction",
+      "option_routes": {
+        "1": "change_quantity",
+        "2": "remove_item",
+        "3": "modify_customizations",
+        "4": "edit_cart",
+        "Change Quantity": "change_quantity",
+        "Remove Item": "remove_item",
+        "Modify Customizations": "modify_customizations",
+        "Back to Cart": "edit_cart"
+      }
+    },
+    "change_quantity": {
+      "id": "change_quantity",
+      "type": "options",
+      "message": "How many {session.data.selectedCartItem.name} would you like?",
+      "options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Remove Item"],
+      "data_key": "newQuantity",
+      "option_routes": {
+        "1": "update_item_quantity",
+        "2": "update_item_quantity",
+        "3": "update_item_quantity",
+        "4": "update_item_quantity",
+        "5": "update_item_quantity",
+        "6": "update_item_quantity",
+        "7": "update_item_quantity",
+        "8": "update_item_quantity",
+        "9": "update_item_quantity",
+        "10": "update_item_quantity",
+        "Remove Item": "remove_item"
+      }
+    },
+    "update_item_quantity": {
+      "id": "update_item_quantity",
+      "type": "api_call",
+      "message": "📝 Updating quantity...",
+      "api": "update_cart_item_quantity",
+      "data_key": "updateResult",
+      "next": {
+        "on_success": "quantity_updated",
+        "on_failure": "update_error"
+      }
+    },
+    "quantity_updated": {
+      "id": "quantity_updated",
+      "type": "info",
+      "message": "✅ Quantity updated successfully!",
+      "next": {
+        "target": "edit_cart"
+      }
+    },
+    "remove_item": {
+      "id": "remove_item",
+      "type": "api_call",
+      "message": "🗑️ Removing {session.data.selectedCartItem.name} from cart...",
+      "api": "remove_cart_item",
+      "data_key": "removeResult",
+      "next": {
+        "on_success": "item_removed",
+        "on_failure": "update_error"
+      }
+    },
+    "item_removed": {
+      "id": "item_removed",
+      "type": "info",
+      "message": "✅ {session.data.selectedCartItem.name} removed from cart!",
+      "next": {
+        "target": "edit_cart"
+      }
+    },
+    "modify_customizations": {
+      "id": "modify_customizations",
+      "type": "api_call",
+      "message": "🔧 Loading customization options...",
+      "api": "get_item_customizations",
+      "data_key": "customizations",
+      "next": {
+        "on_success": "show_customizations_for_edit",
+        "on_failure": "customization_error"
+      }
+    },
+    "show_customizations_for_edit": {
+      "id": "show_customizations_for_edit",
+      "type": "dynamic_options",
+      "message": "🔧 Modify customizations for {session.data.selectedCartItem.name}:\n\n{session.data.customizations}",
+      "options_source": "customizationOptions",
+      "data_key": "newCustomizations",
+      "next": {
+        "on_success": "update_customizations",
+        "on_failure": "customization_error"
+      }
+    },
+    "update_customizations": {
+      "id": "update_customizations",
+      "type": "api_call",
+      "message": "🔧 Updating customizations...",
+      "api": "update_cart_item_customizations",
+      "data_key": "customizationUpdateResult",
+      "next": {
+        "on_success": "customizations_updated",
+        "on_failure": "update_error"
+      }
+    },
+    "customizations_updated": {
+      "id": "customizations_updated",
+      "type": "info",
+      "message": "✅ Customizations updated successfully!",
+      "next": {
+        "target": "edit_cart"
+      }
+    },
+    "customization_error": {
+      "id": "customization_error",
+      "type": "info",
+      "message": "❌ Unable to load customization options. Please try again.",
+      "next": {
+        "target": "cart_item_actions"
+      }
+    },
+    "update_error": {
+      "id": "update_error",
+      "type": "info",
+      "message": "❌ Failed to update cart. Please try again.",
+      "next": {
+        "target": "cart_item_actions"
+      }
+    },
+    "checkout": {
+      "id": "checkout",
+      "type": "api_call",
+      "message": "💳 Processing your order...",
+      "api": "process_order",
+      "data_key": "orderResult",
+      "next": {
+        "on_success": "order_success",
+        "on_failure": "order_error"
+      }
+    },
+    "order_success": {
+      "id": "order_success",
+      "type": "info",
+      "message": "✅ Order placed successfully!\n\nOrder ID: {session.data.orderResult.orderId}\nEstimated delivery: {session.data.orderResult.estimatedDelivery}",
+      "next": {
+        "target": "return_to_main_menu"
+      }
+    },
+    "order_error": {
+      "id": "order_error",
+      "type": "info",
+      "message": "❌ Failed to process your order. Please try again or contact support.",
+      "next": {
+        "target": "return_to_main_menu"
+      }
+    },
+    "clear_cart": {
+      "id": "clear_cart",
+      "type": "api_call",
+      "message": "🗑️ Clearing your cart...",
+      "api": "clear_cart",
+      "data_key": "clearResult",
+      "next": {
+        "on_success": "cart_cleared",
+        "on_failure": "clear_error"
+      }
+    },
+    "cart_cleared": {
+      "id": "cart_cleared",
+      "type": "info",
+      "message": "✅ Your cart has been cleared.",
+      "next": {
+        "target": "return_to_main_menu"
+      }
+    },
+    "clear_error": {
+      "id": "clear_error",
+      "type": "info",
+      "message": "❌ Failed to clear your cart. Please try again.",
+      "next": {
+        "target": "return_to_main_menu"
+      }
+    },
+    "track_order": {
+      "id": "track_order",
+      "type": "api_call",
+      "message": "📦 Fetching your orders...",
+      "api": "get_orders",
+      "data_key": "orders",
+      "next": {
+        "on_success": "display_orders",
+        "on_failure": "orders_error"
+      }
+    },
+    "display_orders": {
+      "id": "display_orders",
+      "type": "info",
+      "message": "📦 Your Orders:\n\n{session.data.orders}",
+      "next": {
+        "target": "return_to_main_menu"
+      }
+    },
+    "orders_error": {
+      "id": "orders_error",
+      "type": "info",
+      "message": "❌ Unable to fetch your orders. Please try again later.",
+      "next": {
+        "target": "return_to_main_menu"
+      }
+    },
+    "view_offers": {
+      "id": "view_offers",
+      "type": "api_call",
+      "message": "💸 Fetching current offers...",
+      "api": "get_offers",
+      "data_key": "offers",
+      "next": {
+        "on_success": "display_offers",
+        "on_failure": "offers_error"
+      }
+    },
+    "display_offers": {
+      "id": "display_offers",
+      "type": "info",
+      "message": "💸 Current Offers & Promotions:\n\n{session.data.offers}",
+      "next": {
+        "target": "return_to_main_menu"
+      }
+    },
+    "offers_error": {
+      "id": "offers_error",
+      "type": "info",
+      "message": "❌ Unable to fetch offers at this time. Please try again later.",
+      "next": {
+        "target": "return_to_main_menu"
+      }
+    },
+    "contact_support": {
+      "id": "contact_support",
+      "type": "options",
+      "message": "🛎️ How can we help you?\n\n1️⃣ General Support\n2️⃣ Order Issues\n3️⃣ Payment Problems\n4️⃣ Back to Main Menu",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "General Support",
+        "Order Issues",
+        "Payment Problems",
+        "Back to Main Menu"
+      ],
+      "data_key": "supportChoice",
+      "option_routes": {
+        "1": "general_support",
+        "2": "order_support",
+        "3": "payment_support",
+        "4": "main_menu",
+        "General Support": "general_support",
+        "Order Issues": "order_support",
+        "Payment Problems": "payment_support",
+        "Back to Main Menu": "main_menu"
+      }
+    },
+    "general_support": {
+      "id": "general_support",
+      "type": "call",
+      "message": "📞 For general support, call:",
+      "phone_number": "+1 800 FOODBOT",
+      "next": { "target": "main_menu" }
+    },
+    "order_support": {
+      "id": "order_support",
+      "type": "call",
+      "message": "📞 For order issues, call:",
+      "phone_number": "+1 800 ORDERHELP",
+      "next": { "target": "main_menu" }
+    },
+    "payment_support": {
+      "id": "payment_support",
+      "type": "call",
+      "message": "📞 For payment problems, call:",
+      "phone_number": "+1 800 PAYMENT",
+      "next": { "target": "main_menu" }
+    },
+    "return_to_main_menu": {
+      "id": "return_to_main_menu",
+      "type": "options",
+      "message": "Would you like to return to the main menu?",
+      "options": ["Yes", "No"],
+      "data_key": "returnToMenuChoice",
+      "option_routes": {
+        "Yes": "main_menu",
+        "No": "end"
+      }
+    },
+    "end": {
+      "id": "end",
+      "type": "info",
+      "message": "Thank you for using FoodBot! Enjoy your meal! 🍽️",
+      "next": {
+        "target": "main_menu"
+      }
+    }
+  }
+}
