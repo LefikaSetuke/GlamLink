@@ -1,21 +1,22 @@
-import { saveClientBooking } from "../models/bookingSchema.js";
+const flowEngine = require("../engine/flowEngine");
 
-export async function whatsappWebhookHandler(req, res) {
-  const userPhone = req.body.From.replace("whatsapp:", "");
-  const userName = req.body.ProfileName || "Unknown";
+class WebhookController {
+  async handleWebhook(req, res) {
+    try {
+      const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+      if (!message) return res.sendStatus(200);
 
-  // Extract booking details from the message
-  const booking = {
-    service: req.body.service,
-    stylist: req.body.stylist,
-    time: req.body.time,
-    payments: req.body.payments, // array of payment objects
-  };
+      const from = message.from;
+      const text = message.text?.body || "";
 
-  try {
-    await saveClientBooking(userPhone, userName, booking);
-    res.status(200).send("Booking saved!");
-  } catch (error) {
-    res.status(500).send("Error saving booking");
+      const reply = await flowEngine.handleMessage(from, text, "bookingFlow");
+
+      return res.status(200).json({ reply });
+    } catch (error) {
+      console.error("Webhook Error:", error.message);
+      return res.status(500).json({ success: false, message: error.message });
+    }
   }
 }
+
+module.exports = new WebhookController();

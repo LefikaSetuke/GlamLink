@@ -17,7 +17,7 @@ class FlowEngine {
             this.sessions[userId] = {
                 flowName,
                 currentNode: flow.start_node,
-                data: {}
+                data: {stylists: flow.stylists}
             };
         }
         return this.sessions[userId];
@@ -26,39 +26,50 @@ class FlowEngine {
     async handleMessage(userId, userMessage, flowName) {
         const flow = this.loadFlow(flowName);
         const session = this.getSession(userId, flowName);
-        const currentNode = flow.nodes[session.currentNode];
+        const node = flow.nodes[session.currentNode];
 
-        switch (currentNode.type) {
+        switch (node.type) {
             case "info":
-            session.currentNode = currentNode.next?.target || session.currentNode;
-            return currentNode.message;
+            session.currentNode = node.next?.target || session.currentNode;
+            return this.interpolate(node.message, session);
 
             case "options":
             const choice = userMessage.trim();
-            const nextNodeId = currentNode.option_routes[choice];
+            const nextNodeId = node.option_routes[choice];
             if (!nextNodeId) {
-                return `Invalid choice. Please reply with one of: ${Object.keys(currentNode.option_routes).join(", ")}`;
+                return `Invalid choice. Please reply with one of: ${Object.keys(node.option_routes).join(", ")}`;
             }
-            session.data[currentNode.data_key] = choice;
+            session.data[node.data_key] = choice;
             session.currentNode = nextNodeId;
-            return flow.nodes[nextNodeId].message;
-
-            case "api_call":
-            session.currentNode = currentNode.next?.on_success || session.currentNode;
-            return currentNode.message;
+            return this.interpolate (flow.nodes[nextNodeId].message, session);
 
             case "dynamic_options":
-            const optionList = session.data[currentNode.options_source] || [];
-            return currentNode.message.replace("{session.data.vendors}", optionList.join("\n"));
-
-            case "switch_flow":
-            session.currentNode = currentNode.targetFlow;
-            return currentNode.message;
+            const optionsSource = this.resolvePath(session.data, node.options_source);
+            if (!optionsSource || optionsSource.length === 0) {
+            session.currentNode = node.next?.on_failure || "error";
+            return this.interpolate(flow.node[session.currentNode].message, session);
+            }
+            session.data[node.data_key] = userMessage.trim();
+            session.currentNode = node.next?.on_success;
+            return this.interpolate(node.message, session);
 
             default:
             return "Sorry, I didnt understad that step.";
         }
     }
+
+            interpolate(message, session) {
+                return message.replace(/\{([^]+)\}/g, (_, key) => {
+                    const value = this.resolvePath(session, key);
+                    return value !== undefined ? JSON.stringify(value) : "";
+                });
+            }
+
+            resolvePath(obj, pathStr) {
+                return pathStr.split(".").reduce((acc, part) => acc?.[part], obj);
+            }
+        
+    
 }
 
 module.exports = new FlowEngine();

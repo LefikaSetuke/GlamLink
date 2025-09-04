@@ -1,8 +1,169 @@
 {
-    "start_node": "Hello",
-    "nodes": {
-        "Hello": {
-            "id":"hello"
-        }
+  "start_node": "greeting",
+  "nodes": {
+    "greeting": {
+      "id": "greeting",
+      "type": "info",
+      "message": "💇‍♀️ Welcome to GlamLink! Browse our top stylists and book your service.",
+      "next": {
+        "type": "auto",
+        "target": "main_menu"
+      }
+    },
+    "main_menu": {
+      "id": "main_menu",
+      "type": "options",
+      "message": "✨ Main Menu:\n1️⃣ Browse Stylists\n2️⃣ View My Bookings\n3️⃣ Contact Support",
+      "options": ["1", "2", "3", "Browse Stylists", "View My Bookings", "Contact Support"],
+      "data_key": "mainMenuChoice",
+      "option_routes": {
+        "1": "browse_stylists",
+        "2": "view_bookings",
+        "3": "contact_support",
+        "Browse Stylists": "browse_stylists",
+        "View My Bookings": "view_bookings",
+        "Contact Support": "contact_support"
+      }
+    },
+    "browse_stylists": {
+      "id": "browse_stylists",
+      "type": "dynamic_options",
+      "message": "💄 Available Stylists:\n\n{session.data.stylists}",
+      "options_source": "stylists",
+      "data_key": "selectedStylist",
+      "next": {
+        "on_success": "stylist_details",
+        "on_failure": "error"
+      }
+    },
+    "stylist_details": {
+      "id": "stylist_details",
+      "type": "options",
+      "message": "Stylist: {session.data.selectedStylist.stylistName}\nPhone: {session.data.selectedStylist.phoneNumber}\nServices: {session.data.selectedStylist.services}\nAvailable Slots: {session.data.selectedStylist.availableSlots}\nPayment Methods: {session.data.selectedStylist.paymentMethods}\n\n1️⃣ Book a Slot\n2️⃣ Back to Stylists\n3️⃣ Main Menu",
+      "options": ["1", "2", "3", "Book a Slot", "Back to Stylists", "Main Menu"],
+      "data_key": "stylistAction",
+      "option_routes": {
+        "1": "book_slot",
+        "2": "browse_stylists",
+        "3": "main_menu",
+        "Book a Slot": "book_slot",
+        "Back to Stylists": "browse_stylists",
+        "Main Menu": "main_menu"
+      }
+    },
+    "book_slot": {
+      "id": "book_slot",
+      "type": "dynamic_options",
+      "message": "📅 Available Slots for {session.data.selectedStylist.stylistName}:\n\n{session.data.selectedStylist.availableSlots}",
+      "options_source": "selectedStylist.availableSlots",
+      "data_key": "selectedSlot",
+      "next": {
+        "on_success": "confirm_booking",
+        "on_failure": "error"
+      }
+    },
+    "confirm_booking": {
+      "id": "confirm_booking",
+      "type": "info",
+      "message": "✅ Booking confirmed!\n\nStylist: {session.data.selectedStylist.stylistName}\nSlot: {session.data.selectedSlot}\nPhone: {session.data.selectedStylist.phoneNumber}\nPayment Methods: {session.data.selectedStylist.paymentMethods}",
+      "next": {
+        "target": "main_menu"
+      }
+    },
+    "view_bookings": {
+      "id": "view_bookings",
+      "type": "info",
+      "message": "📅 You currently have no bookings.\nReturn to main menu to make a booking.",
+      "next": {
+        "target": "main_menu"
+      }
+    },
+    "contact_support": {
+      "id": "contact_support",
+      "type": "info",
+      "message": "📞 For support, call +26671018609",
+      "next": {
+        "target": "main_menu"
+      }
+    },
+    "error": {
+      "id": "error",
+      "type": "info",
+      "message": "❌ Unable to load stylists. Please try again later.",
+      "next": {
+        "target": "main_menu"
+      }
     }
+  },
+  "stylists": [
+    {
+      "stylistName": "Nomhle",
+      "phoneNumber": "+26650123456",
+      "services": [
+        { "name": "Makeup", "price": 300 },
+        { "name": "Nails", "price": 250 }
+      ],
+      "availableSlots": [
+        "2025-09-05T10:00:00",
+        "2025-09-05T12:00:00",
+        "2025-09-05T14:00:00"
+      ],
+      "paymentMethods": ["Credit Card", "Cash"]
+    },
+    {
+      "stylistName": "Lefika",
+      "phoneNumber": "+26650123457",
+      "services": [
+        { "name": "Hair Cut", "price": 350 }
+      ],
+      "availableSlots": [
+        "2025-09-05T09:00:00",
+        "2025-09-05T11:00:00",
+        "2025-09-05T15:00:00"
+      ],
+      "paymentMethods": ["Cash"]
+    },
+    {
+      "stylistName": "Faith",
+      "phoneNumber": "+26650123458",
+      "services": [
+        { "name": "Hairstyles", "price": 200 },
+        { "name": "Nails", "price": 180 }
+      ],
+      "availableSlots": [
+        "2025-09-05T08:00:00",
+        "2025-09-05T13:00:00",
+        "2025-09-05T16:00:00"
+      ],
+      "paymentMethods": ["Credit Card", "Cash"]
+    },
+    {
+      "stylistName": "Lineo",
+      "phoneNumber": "+26650123459",
+      "services": [
+        { "name": "Makeup", "price": 400 },
+        { "name": "Hairstyles", "price": 300 }
+      ],
+      "availableSlots": [
+        "2025-09-05T10:30:00",
+        "2025-09-05T12:30:00",
+        "2025-09-05T17:00:00"
+      ],
+      "paymentMethods": ["Credit Card", "Cash"]
+    },
+    {
+      "stylistName": "Mpho",
+      "phoneNumber": "+26650123460",
+      "services": [
+        { "name": "Nails", "price": 200 },
+        { "name": "Makeup", "price": 320 }
+      ],
+      "availableSlots": [
+        "2025-09-05T09:30:00",
+        "2025-09-05T11:30:00",
+        "2025-09-05T15:30:00"
+      ],
+      "paymentMethods": ["Credit Card", "Cash"]
+    }
+  ]
 }
