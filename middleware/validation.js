@@ -1,4 +1,5 @@
-//Ensures clean error handling for booking data
+
+//Ensures clean error handling 
 import { validateBooking } from '../models/bookingSchema.js';
 
 //validate booking data
@@ -9,3 +10,4 @@ export function bookingValidationMiddleware(req, res, next) {
 	}
 	next();
 }
+

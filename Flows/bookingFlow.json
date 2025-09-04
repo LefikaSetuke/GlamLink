@@ -1,0 +1,126 @@
+{
+    "start_node": "greeting",
+    "nodes": {
+        "greeting": {
+            "id": "greeting",
+            "type": "info",
+            "message": "💇‍♀️ Welcome to GlamLink! Browse our top stylists and book your service.",
+            "next": {
+                "type": "auto",
+                "target": "main_menu"
+            }
+        },
+        "main_menu": {
+            "id": "main_menu",
+            "type": "dynamic_options",
+            "message": "💄 Available Stylists:\n\n{session.data.stylists}",
+            "options_source": "stylists",
+            "data_key": "selectedStylist",
+            "next": {
+                "on_success": "stylist_details",
+                "on_failure": "error"
+            }
+        },
+        "stylist_details": {
+            "id": "stylist_details",
+            "type": "info",
+            "message": "Stylist: {session.data.selectedStylist.stylistName}\nPhone: {session.data.selectedStylist.phoneNumber}\nServices: {session.data.selectedStylist.services}\nAvailable Slots: {session.data.selectedStylist.availableSlots}",
+            "next": {
+                "target": "main_menu"
+            }
+        },
+        "error": {
+            "id": "error",
+            "type": "info",
+            "message": "❌ Unable to load stylists. Please try again later.",
+            "next": {
+                "target": "main_menu"
+            }
+        }
+    },
+    "stylists": [
+        {
+            "stylistName": "Nomhle",
+            "phoneNumber": "+26650123456",
+            "services": [
+                { "name": "Makeup", "price": 300 },
+                { "name": "Nails", "price": 250 }
+            ],
+            "availableSlots": [
+                "2025-09-05T10:00:00",
+                "2025-09-05T12:00:00",
+                "2025-09-05T14:00:00"
+            ],
+            "Payment Methods": [
+                "Credit Card",
+                "Cash"
+            ]
+        },
+        {
+            "stylistName": "Lefika",
+            "phoneNumber": "+26650123457",
+            "services": [
+                { "name": "Hair cut", "price": 350 }
+            ],
+            "availableSlots": [
+                "2025-09-05T09:00:00",
+                "2025-09-05T11:00:00",
+                "2025-09-05T15:00:00"
+            ],
+            "Payment Methods": [
+                "Cash"
+            ]
+        },
+        {
+            "stylistName": "Faith",
+            "phoneNumber": "+26650123458",
+            "services": [
+                { "name": "Hairstyles", "price": 200 },
+                { "name": "Nails", "price": 180 }
+            ],
+            "availableSlots": [
+                "2025-09-05T08:00:00",
+                "2025-09-05T13:00:00",
+                "2025-09-05T16:00:00"
+            ],
+            "Payment Methods": [
+                "Credit Card",
+                "Cash"
+            ]
+        },
+        {
+            "stylistName": "Lineo",
+            "phoneNumber": "+26650123459",
+            "services": [
+                { "name": "Makeup", "price": 400 },
+                { "name": "Hairstyles", "price": 300 }
+            ],
+            "availableSlots": [
+                "2025-09-05T10:30:00",
+                "2025-09-05T12:30:00",
+                "2025-09-05T17:00:00"
+            ],
+            "Payment Methods": [
+                "Credit Card",
+                "Cash"
+            ]
+        },
+        {
+            "stylistName": "Mpho",
+            "phoneNumber": "+26650123460",
+            "services": [
+                { "name": "Nails", "price": 200 },
+                { "name": "Makeup", "price": 320 }
+            ],
+            "availableSlots": [
+                "2025-09-05T09:30:00",
+                "2025-09-05T11:30:00",
+                "2025-09-05T15:30:00"
+            ],
+            "Payment Methods": [
+                "Credit Card",
+                "Cash"
+            ]
+        }
+    ]
+}
