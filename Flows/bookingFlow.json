@@ -1,19 +1,10 @@
 {
-  "start_node": "greeting",
+  "start_node": "main_menu",
   "nodes": {
-    "greeting": {
-      "id": "greeting",
-      "type": "info",
-      "message": "Welcome to GlamLink! Browse our top stylists and book your service.",
-      "next": {
-        "type": "auto",
-        "target": "main_menu"
-      }
-    },
     "main_menu": {
       "id": "main_menu",
       "type": "options",
-      "message": "Main Menu:\n1. Browse Stylists\n2. View My Bookings\n3. Contact Support",
+      "message": "Welcome to GlamLink! Browse our top stylists and book your service.\n\nMain Menu:\n1. Browse Stylists\n2. View My Bookings\n3. Contact Support",
       "options": ["1", "2", "3", "Browse Stylists", "View My Bookings", "Contact Support"],
       "data_key": "mainMenuChoice",
       "option_routes": {
