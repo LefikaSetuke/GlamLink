@@ -30,7 +30,7 @@ app.get("/webhook", (req, res) => {
 });
 
 //POST/webhook
-app.post("/webhook", (req, res) => webhookController.handleWebHook(req, res));
+app.post("/webhook", (req, res) => webhookController.handleWebhook(req, res));
 
 //Start server
 const PORT = process.env.PORT || 5000;
