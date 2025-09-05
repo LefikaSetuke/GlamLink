@@ -1,4 +1,5 @@
 const flowEngine = require("../engine/flowEngine");
+const {sendMessage} = require("../services/whatsappService");
 
 class WebhookController {
   async handleWebhook(req, res) {
@@ -11,10 +12,14 @@ class WebhookController {
 
       const reply = await flowEngine.handleMessage(from, text, "bookingFlow");
 
-      return res.status(200).json({ reply });
+      if (reply) {
+        await sendMessage(from, reply);
+      }
+
+      return res.sendStatus(200);
     } catch (error) {
       console.error("Webhook Error:", error.message);
-      return res.status(500).json({ success: false, message: error.message });
+      return res.status(500);
     }
   }
 }

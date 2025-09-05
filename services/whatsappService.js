@@ -1,36 +1,30 @@
+// services/whatsappService.js
 const axios = require("axios");
 
-class WhatsAppService {
-  constructor() {
-    this.apiUrl = `https://graph.facebook.com/v17.0/${process.env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
-    this.token = process.env.WHATSAPP_TOKEN;
-  }
+const WHATSAPP_API_URL = "https://graph.facebook.com/v17.0";
+const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
+const ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
 
-  /**
-   * Send a WhatsApp message
-   * @param {string} to - Recipient phone number
-   * @param {string} message - Message body
-   */
-  async sendMessage(to, message) {
-    try {
-      await axios.post(
-        this.apiUrl,
-        {
-          messaging_product: "whatsapp",
-          to,
-          text: { body: message },
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${this.token}`,
-            "Content-Type": "application/json",
-          },
+async function sendMessage(to, message) {
+  try {
+    await axios.post(
+      `${WHATSAPP_API_URL}/${PHONE_NUMBER_ID}/messages`,
+      {
+        messaging_product: "whatsapp",
+        to,
+        text: { body: message }
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          "Content-Type": "application/json"
         }
-      );
-    } catch (error) {
-      throw new Error(`WhatsApp Send Error: ${error.response?.data?.error?.message || error.message}`);
-    }
+      }
+    );
+    console.log(`✅ Message sent to ${to}: ${message}`);
+  } catch (error) {
+    console.error("❌ WhatsApp sendMessage error:", error.response?.data || error.message);
   }
 }
 
-module.exports = new WhatsAppService();
+module.exports = { sendMessage };

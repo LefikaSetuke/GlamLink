@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require ("express");
 const bodyParser = require("body-parser");
-const whatsappWebhookHandler = require("./controllers/webhookController.js");
+const webhookController = require("./controllers/webhookController.js");
 
 const app = express();
 
