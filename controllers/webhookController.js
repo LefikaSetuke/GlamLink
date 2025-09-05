@@ -19,7 +19,7 @@ class WebhookController {
       return res.sendStatus(200);
     } catch (error) {
       console.error("Webhook Error:", error.message);
-      return res.status(500);
+      return res.sendStatus(500);
     }
   }
 }
