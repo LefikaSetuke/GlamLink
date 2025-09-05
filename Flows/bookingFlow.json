@@ -4,94 +4,124 @@
     "greeting": {
       "id": "greeting",
       "type": "info",
-      "message": "👋 Hello and welcome to GlamLink! How can I help you today?",
+      "message": "👋 Welcome to GlamLink! Browse our top stylists and book your service.",
       "next": {
-        "type": "wait_for_trigger",
-        "trigger": "book",
-        "target": "service_menu"
+        "type": "auto",
+        "target": "main_menu"
       }
     },
-    "service_menu": {
-      "id": "service_menu",
+    "main_menu": {
+      "id": "main_menu",
       "type": "options",
-      "message": "✨ Please choose a service:",
-      "options": [
-        "1️⃣ Makeup",
-        "2️⃣ Nails",
-        "3️⃣ Hair Cut",
-        "4️⃣ Hairstyles",
-        "5️⃣ Other"
-      ],
+      "message": "✨ Main Menu:\n1️⃣ Browse Stylists\n2️⃣ View My Bookings\n3️⃣ Contact Support",
+      "options": ["1", "2", "3", "Browse Stylists", "View My Bookings", "Contact Support"],
+      "data_key": "mainMenuChoice",
+      "option_routes": {
+        "1": "select_service",
+        "2": "view_bookings",
+        "3": "contact_support",
+        "Browse Stylists": "select_service",
+        "View My Bookings": "view_bookings",
+        "Contact Support": "contact_support"
+      }
+    },
+    "select_service": {
+      "id": "select_service",
+      "type": "options",
+      "message": "💄 Select a service to filter stylists:\n1️⃣ Makeup\n2️⃣ Nails\n3️⃣ Hair Cut\n4️⃣ Hairstyles\n5️⃣ All Services",
+      "options": ["1", "2", "3", "4", "5", "Makeup", "Nails", "Hair Cut", "Hairstyles", "All Services"],
       "data_key": "selectedService",
       "option_routes": {
-        "1": "stylist_list",
-        "2": "stylist_list",
-        "3": "stylist_list",
-        "4": "stylist_list",
-        "5": "stylist_list",
-        "Makeup": "stylist_list",
-        "Nails": "stylist_list",
-        "Hair Cut": "stylist_list",
-        "Hairstyles": "stylist_list",
-        "Other": "stylist_list"
+        "1": "browse_stylists_filtered",
+        "2": "browse_stylists_filtered",
+        "3": "browse_stylists_filtered",
+        "4": "browse_stylists_filtered",
+        "5": "browse_stylists",
+        "Makeup": "browse_stylists_filtered",
+        "Nails": "browse_stylists_filtered",
+        "Hair Cut": "browse_stylists_filtered",
+        "Hairstyles": "browse_stylists_filtered",
+        "All Services": "browse_stylists"
       }
     },
-    "stylist_list": {
-      "id": "stylist_list",
+    "browse_stylists_filtered": {
+      "id": "browse_stylists_filtered",
       "type": "dynamic_options",
-      "message": "Stylists available for {session.data.selectedService}:\n\n{session.data.stylistsFiltered}\n\n(Type 'back' to return to services.)",
-      "options_source": "stylistsFiltered",
+      "message": "💇 Stylists offering {session.data.selectedService}:\n\n{session.data.filteredStylists}\n\n👉 Reply with the stylist name or number to continue.",
+      "options_source": "filteredStylists",
       "data_key": "selectedStylist",
       "next": {
-        "on_success": "timeslot_list",
-        "on_failure": "service_menu"
+        "on_success": "stylist_details",
+        "on_failure": "error"
       }
     },
-    "timeslot_list": {
-      "id": "timeslot_list",
+    "browse_stylists": {
+      "id": "browse_stylists",
       "type": "dynamic_options",
-      "message": "Available slots for {session.data.selectedStylist.stylistName}:\n\n{session.data.selectedStylist.availableSlots}\n\n(Type 'back' to choose a different stylist.)",
+      "message": "💇 Available Stylists:\n\n{session.data.stylists}\n\n👉 Reply with the stylist name or number to continue.",
+      "options_source": "stylists",
+      "data_key": "selectedStylist",
+      "next": {
+        "on_success": "stylist_details",
+        "on_failure": "error"
+      }
+    },
+    "stylist_details": {
+      "id": "stylist_details",
+      "type": "options",
+      "message": "👩‍🎨 Stylist: {session.data.selectedStylist.stylistName}\n📞 Phone: {session.data.selectedStylist.phoneNumber}\n💅 Services: {session.data.selectedStylist.services}\n🗓️ Available Slots: {session.data.selectedStylist.availableSlots}\n💳 Payment Methods: {session.data.selectedStylist.paymentMethods}\n\n1️⃣ Book a Slot\n2️⃣ Back to Services\n3️⃣ Main Menu",
+      "options": ["1", "2", "3", "Book a Slot", "Back to Services", "Main Menu"],
+      "data_key": "stylistAction",
+      "option_routes": {
+        "1": "book_slot",
+        "2": "select_service",
+        "3": "main_menu",
+        "Book a Slot": "book_slot",
+        "Back to Services": "select_service",
+        "Main Menu": "main_menu"
+      }
+    },
+    "book_slot": {
+      "id": "book_slot",
+      "type": "dynamic_options",
+      "message": "🗓️ Available Slots for {session.data.selectedStylist.stylistName}:\n\n{session.data.selectedStylist.availableSlots}\n\n👉 Reply with the slot number or exact time.",
       "options_source": "selectedStylist.availableSlots",
       "data_key": "selectedSlot",
       "next": {
-        "on_success": "booking_summary",
-        "on_failure": "stylist_list"
+        "on_success": "confirm_booking",
+        "on_failure": "error"
       }
     },
-    "booking_summary": {
-      "id": "booking_summary",
+    "confirm_booking": {
+      "id": "confirm_booking",
       "type": "info",
-      "message": "Booking Summary:\n\nService: {session.data.selectedService}\nStylist: {session.data.selectedStylist.stylistName}\nSlot: {session.data.selectedSlot}\n\nHow would you like to pay?\n1️⃣ Cash\n2️⃣ Bank Transfer",
+      "message": "✅ Booking confirmed!\n\n👩‍🎨 Stylist: {session.data.selectedStylist.stylistName}\n🗓️ Slot: {session.data.selectedSlot}\n📞 Phone: {session.data.selectedStylist.phoneNumber}\n💳 Payment Methods: {session.data.selectedStylist.paymentMethods}\n\n👉 You’ll receive a reminder before your appointment.",
       "next": {
-        "target": "payment_method"
+        "target": "main_menu"
       }
     },
-    "payment_method": {
-      "id": "payment_method",
-      "type": "options",
-      "options": ["1️⃣ Cash", "2️⃣ Bank Transfer"],
-      "data_key": "paymentMethod",
-      "option_routes": {
-        "1": "success",
-        "2": "success",
-        "Cash": "success",
-        "Bank Transfer": "success"
-      }
-    },
-    "success": {
-      "id": "success",
+    "view_bookings": {
+      "id": "view_bookings",
       "type": "info",
-      "message": "✅ Your booking with {session.data.selectedStylist.stylistName} for {session.data.selectedService} at {session.data.selectedSlot} is successful.\n\n📌 A reminder will be sent before your appointment. Thank you for choosing GlamLink!",
+      "message": "📅 You currently have no bookings.\nReturn to main menu to make a booking.",
       "next": {
-        "target": "greeting"
+        "target": "main_menu"
+      }
+    },
+    "contact_support": {
+      "id": "contact_support",
+      "type": "info",
+      "message": "📞 For support, call +26671018609",
+      "next": {
+        "target": "main_menu"
       }
     },
     "error": {
       "id": "error",
       "type": "info",
-      "message": "❌ Something went wrong. Let's start again.",
+      "message": "❌ Unable to load stylists. Please try again later.",
       "next": {
-        "target": "greeting"
+        "target": "main_menu"
       }
     }
   },
@@ -101,35 +131,35 @@
       "phoneNumber": "+26650123456",
       "services": ["Makeup", "Nails"],
       "availableSlots": ["2025-09-05T10:00:00", "2025-09-05T12:00:00", "2025-09-05T14:00:00"],
-      "paymentMethods": ["Cash", "Bank Transfer"]
+      "paymentMethods": ["Credit Card", "Cash"]
     },
     {
       "stylistName": "Lefika",
       "phoneNumber": "+26650123457",
       "services": ["Hair Cut"],
       "availableSlots": ["2025-09-05T09:00:00", "2025-09-05T11:00:00", "2025-09-05T15:00:00"],
-      "paymentMethods": ["Cash", "Bank Transfer"]
+      "paymentMethods": ["Cash"]
     },
     {
       "stylistName": "Faith",
       "phoneNumber": "+26650123458",
       "services": ["Hairstyles", "Nails"],
       "availableSlots": ["2025-09-05T08:00:00", "2025-09-05T13:00:00", "2025-09-05T16:00:00"],
-      "paymentMethods": ["Cash", "Bank Transfer"]
+      "paymentMethods": ["Credit Card", "Cash"]
     },
     {
-      "stylistName": "Limpho",
+      "stylistName": "Lineo",
       "phoneNumber": "+26650123459",
       "services": ["Makeup", "Hairstyles"],
       "availableSlots": ["2025-09-05T10:30:00", "2025-09-05T12:30:00", "2025-09-05T17:00:00"],
-      "paymentMethods": ["Cash", "Bank Transfer"]
+      "paymentMethods": ["Credit Card", "Cash"]
     },
     {
-      "stylistName": "Naomi",
+      "stylistName": "Mpho",
       "phoneNumber": "+26650123460",
       "services": ["Nails", "Makeup"],
       "availableSlots": ["2025-09-05T09:30:00", "2025-09-05T11:30:00", "2025-09-05T15:30:00"],
-      "paymentMethods": ["Cash", "Bank Transfer"]
+      "paymentMethods": ["Credit Card", "Cash"]
     }
   ]
 }
